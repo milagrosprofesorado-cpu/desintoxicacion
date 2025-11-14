@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dejar las harinas — Tarjetas</title>
+
+  <!-- Poppins desde Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div>
+        <h1>Dejar las harinas</h1>
+        <p class="subtitle">Pulsa el botón cada día. La tarjeta aparecerá lista para captura de pantalla.</p>
+      </div>
+      <div class="actions-top">
+        <button id="btnAddDay" class="btn primary">Registrar Día</button>
+        <div class="import-export">
+          <input id="fileImport" type="file" accept="application/json" hidden>
+          <button id="btnExport" class="btn ghost">Exportar JSON</button>
+          <button id="btnImport" class="btn ghost">Importar JSON</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <section class="left-col">
+        <div class="card control-card">
+          <div id="message" class="message" role="status" aria-live="polite"></div>
+          <div class="hint">Fecha actual: <span id="todayLabel"></span></div>
+        </div>
+
+        <div class="card preview-card">
+          <h2>Tarjeta (lista para captura)</h2>
+          <div class="preview-wrap" aria-hidden="false">
+            <!-- Tarjeta con tamaño fijo pensado para screenshot -->
+            <div id="cardPreview" class="card-screenshot" role="region" aria-label="Tarjeta de desintoxicación" style="display:none">
+              <div class="card-inner">
+                <div id="cardTitle" class="card-title">Día X de Desintoxicación</div>
+                <div id="cardDate" class="card-date">DD/MM/AAAA</div>
+              </div>
+            </div>
+            <div id="noPreview" class="muted">No hay tarjetas registradas aún. Pulsa "Registrar Día".</div>
+          </div>
+        </div>
+
+        <div class="card history-card">
+          <h2>Historial</h2>
+          <div id="historyList" class="history-list" role="list"></div>
+          <div class="controls-row">
+            <button id="btnClear" class="btn danger">Borrar historial</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-col">
+        <div class="card help-card">
+          <h3>Cómo usar</h3>
+          <ol>
+            <li>Abre la app cada día y pulsa <strong>Registrar Día</strong>.</li>
+            <li>Seleccioná la tarjeta que quieras y sacale captura de pantalla (o usá la función nativa de tu equipo).</li>
+            <li>Para mover datos entre dispositivos, usá <strong>Exportar/Importar JSON</strong>.</li>
+          </ol>
+        </div>
+
+        <div class="card tech-card">
+          <h3>Notas técnicas</h3>
+          <ul>
+            <li>Datos guardados localmente en el navegador (localStorage).</li>
+            <li>Clave storage: <code>dh_history_v3</code>.</li>
+            <li>Si querés, te agrego un botón que genere directamente PNG (pero dijiste que sólo captura).</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="footer">
+      <small>Diseño: Poppins — Colores azul/verde claro — LocalStorage</small>
+    </footer>
+  </main>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
