@@ -1,8 +1,7 @@
-// app.js (module) - gestión sin frameworks, optimizada y con fecha local segura
+// app.js (module) - con modal que muestra meme.jpg al tocar la tarjeta
 const STORAGE_KEY = 'dh_history_v3';
 
 function todayIsoLocal(){
-  // Devuelve YYYY-MM-DD usando la fecha local (evita problemas de timezone)
   const d = new Date();
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -33,7 +32,7 @@ function saveHistory(history){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 }
 
-/* DOM references */
+/* DOM refs */
 const btnAddDay = document.getElementById('btnAddDay');
 const messageEl = document.getElementById('message');
 const todayLabel = document.getElementById('todayLabel');
@@ -50,19 +49,25 @@ const btnExport = document.getElementById('btnExport');
 const btnImport = document.getElementById('btnImport');
 const fileImport = document.getElementById('fileImport');
 
+const modalOverlay = document.getElementById('modalOverlay');
+const modalClose = document.getElementById('modalClose');
+const modalImage = document.getElementById('modalImage');
+
 let history = loadHistory();
 let selectedIndex = history.length ? history.length - 1 : -1;
 
-/* Accessibility: set initial aria labels if needed */
+/* Accessibility label init */
 if (todayLabel) todayLabel.textContent = formatDateIsoToLocal(todayIsoLocal());
 
-/* init */
+/* Init */
 function init(){
   todayLabel.textContent = formatDateIsoToLocal(todayIsoLocal());
   renderHistory();
   renderPreview();
+  attachModalHandlers();
 }
 
+/* Messages */
 function setMessage(msg, timeout=2500){
   if (!messageEl) return;
   messageEl.textContent = msg;
@@ -112,7 +117,6 @@ function renderHistory(){
     renderPreview();
     return;
   }
-  // mostramos del más reciente al más antiguo
   const reversed = [...history].reverse();
   reversed.forEach((e, i) => {
     const realIndex = history.length - 1 - i;
@@ -142,7 +146,6 @@ function renderHistory(){
       selectedIndex = realIndex;
       renderHistory();
       renderPreview();
-      // Scroll preview into view on mobile
       if (window.innerWidth < 980) {
         document.getElementById('cardPreview')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -187,7 +190,6 @@ if (fileImport) fileImport.addEventListener('change', async (ev)=> {
     const txt = await f.text();
     const parsed = JSON.parse(txt);
     if (!Array.isArray(parsed)) throw new Error('JSON debe ser un array de entradas');
-    // Basic validation of entries
     const ok = parsed.every(p => p && typeof p.day === 'number' && typeof p.date === 'string');
     if (!ok) throw new Error('Formato JSON inválido');
     history = parsed;
@@ -203,5 +205,50 @@ if (fileImport) fileImport.addEventListener('change', async (ev)=> {
   }
 });
 
-/* Init on load */
+/* ---------- Modal handlers ---------- */
+function openModal(){
+  if (!modalOverlay) return;
+  modalOverlay.setAttribute('aria-hidden', 'false');
+  // trap focus: focus close button
+  modalClose?.focus();
+  // prevent background scroll
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  if (!modalOverlay) return;
+  modalOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  // return focus to card for accessibility
+  cardPreview?.focus();
+}
+
+function attachModalHandlers(){
+  if (!modalOverlay) return;
+  // clicking the card opens modal (if there's a preview)
+  cardPreview?.addEventListener('click', ()=> {
+    if (selectedIndex >= 0) openModal();
+  });
+  // keyboard activation (Enter / Space)
+  cardPreview?.addEventListener('keydown', (e)=> {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (selectedIndex >= 0) openModal();
+    }
+  });
+
+  modalClose?.addEventListener('click', closeModal);
+
+  // click outside content closes
+  modalOverlay.addEventListener('click', (e)=> {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  // esc key closes
+  document.addEventListener('keydown', (e)=> {
+    if (e.key === 'Escape' && modalOverlay.getAttribute('aria-hidden') === 'false') closeModal();
+  });
+}
+
+/* Init */
 init();
