@@ -1,10 +1,13 @@
-// app.js (module) - gestión sin frameworks
+// app.js (module) - gestión sin frameworks, optimizada y con fecha local segura
 const STORAGE_KEY = 'dh_history_v3';
 
 function todayIsoLocal(){
+  // Devuelve YYYY-MM-DD usando la fecha local (evita problemas de timezone)
   const d = new Date();
-  const tzOff = d.getTimezoneOffset() * 60000;
-  return new Date(d - tzOff).toISOString().slice(0,10);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function formatDateIsoToLocal(iso){
@@ -50,6 +53,9 @@ const fileImport = document.getElementById('fileImport');
 let history = loadHistory();
 let selectedIndex = history.length ? history.length - 1 : -1;
 
+/* Accessibility: set initial aria labels if needed */
+if (todayLabel) todayLabel.textContent = formatDateIsoToLocal(todayIsoLocal());
+
 /* init */
 function init(){
   todayLabel.textContent = formatDateIsoToLocal(todayIsoLocal());
@@ -58,12 +64,13 @@ function init(){
 }
 
 function setMessage(msg, timeout=2500){
+  if (!messageEl) return;
   messageEl.textContent = msg;
   if (timeout) setTimeout(()=>{ if (messageEl.textContent === msg) messageEl.textContent = ''; }, timeout);
 }
 
 /* Add day */
-btnAddDay.addEventListener('click', ()=> {
+if (btnAddDay) btnAddDay.addEventListener('click', ()=> {
   const today = todayIsoLocal();
   if (history.length > 0 && history[history.length - 1].date === today){
     setMessage('Ya registraste el día de hoy. La tarjeta está lista para capturar.');
@@ -82,11 +89,12 @@ btnAddDay.addEventListener('click', ()=> {
 
 /* Render preview */
 function renderPreview(){
+  if (!cardPreview || !cardTitle || !cardDate || !noPreview) return;
   if (selectedIndex >= 0 && history[selectedIndex]){
     const e = history[selectedIndex];
     cardTitle.textContent = `Día ${e.day} de Desintoxicación`;
     cardDate.textContent = formatDateIsoToLocal(e.date);
-    cardPreview.style.display = 'block';
+    cardPreview.style.display = 'flex';
     noPreview.style.display = 'none';
   } else {
     cardPreview.style.display = 'none';
@@ -96,6 +104,7 @@ function renderPreview(){
 
 /* Render history list */
 function renderHistory(){
+  if (!historyList) return;
   historyList.innerHTML = '';
   if (!history.length){
     historyList.innerHTML = '<div class="muted">Sin registros</div>';
@@ -133,6 +142,10 @@ function renderHistory(){
       selectedIndex = realIndex;
       renderHistory();
       renderPreview();
+      // Scroll preview into view on mobile
+      if (window.innerWidth < 980) {
+        document.getElementById('cardPreview')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     });
 
     btns.appendChild(sel);
@@ -144,7 +157,7 @@ function renderHistory(){
 }
 
 /* Clear history */
-btnClear.addEventListener('click', ()=> {
+if (btnClear) btnClear.addEventListener('click', ()=> {
   const ok = confirm('¿Querés eliminar todo el historial? Esta acción no se puede deshacer.');
   if (!ok) return;
   history = [];
@@ -156,7 +169,7 @@ btnClear.addEventListener('click', ()=> {
 });
 
 /* Export JSON */
-btnExport.addEventListener('click', ()=> {
+if (btnExport) btnExport.addEventListener('click', ()=> {
   const blob = new Blob([JSON.stringify(history, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -166,8 +179,8 @@ btnExport.addEventListener('click', ()=> {
 });
 
 /* Import JSON */
-btnImport.addEventListener('click', ()=> fileImport.click());
-fileImport.addEventListener('change', async (ev)=> {
+if (btnImport) btnImport.addEventListener('click', ()=> fileImport.click());
+if (fileImport) fileImport.addEventListener('change', async (ev)=> {
   const f = ev.target.files?.[0];
   if (!f) return;
   try {
