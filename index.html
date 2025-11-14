@@ -11,14 +11,15 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="app">
+  <main class="app" role="main">
     <header class="header">
-      <div>
+      <div class="header-left">
         <h1>Dejar las harinas</h1>
         <p class="subtitle">Pulsa el botón cada día. La tarjeta aparecerá lista para captura de pantalla.</p>
       </div>
+
       <div class="actions-top">
-        <button id="btnAddDay" class="btn primary">Registrar Día</button>
+        <button id="btnAddDay" class="btn primary large" aria-label="Registrar día">Registrar Día</button>
         <div class="import-export">
           <input id="fileImport" type="file" accept="application/json" hidden>
           <button id="btnExport" class="btn ghost">Exportar JSON</button>
@@ -31,13 +32,13 @@
       <section class="left-col">
         <div class="card control-card">
           <div id="message" class="message" role="status" aria-live="polite"></div>
-          <div class="hint">Fecha actual: <span id="todayLabel"></span></div>
+          <div class="hint">Fecha actual: <span id="todayLabel" aria-hidden="false"></span></div>
         </div>
 
         <div class="card preview-card">
           <h2>Tarjeta (lista para captura)</h2>
-          <div class="preview-wrap" aria-hidden="false">
-            <!-- Tarjeta con tamaño fijo pensado para screenshot -->
+          <div class="preview-wrap">
+            <!-- Tarjeta con tamaño fijo pensado para screenshot; responsive en móviles -->
             <div id="cardPreview" class="card-screenshot" role="region" aria-label="Tarjeta de desintoxicación" style="display:none">
               <div class="card-inner">
                 <div id="cardTitle" class="card-title">Día X de Desintoxicación</div>
@@ -57,7 +58,7 @@
         </div>
       </section>
 
-      <aside class="right-col">
+      <aside class="right-col" aria-label="Ayuda y notas">
         <div class="card help-card">
           <h3>Cómo usar</h3>
           <ol>
@@ -72,7 +73,7 @@
           <ul>
             <li>Datos guardados localmente en el navegador (localStorage).</li>
             <li>Clave storage: <code>dh_history_v3</code>.</li>
-            <li>Si querés, te agrego un botón que genere directamente PNG (pero dijiste que sólo captura).</li>
+            <li>Si querés, agrego exportar/importar con Google Drive o sincronía (opcional).</li>
           </ul>
         </div>
       </aside>
