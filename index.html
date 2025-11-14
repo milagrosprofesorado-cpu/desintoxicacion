@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dejar las harinas — Tarjetas</title>
 
-  <!-- Poppins desde Google Fonts -->
+  <!-- Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
@@ -39,7 +39,7 @@
           <h2>Tarjeta (lista para captura)</h2>
           <div class="preview-wrap">
             <!-- Tarjeta con tamaño fijo pensado para screenshot; responsive en móviles -->
-            <div id="cardPreview" class="card-screenshot" role="region" aria-label="Tarjeta de desintoxicación" style="display:none">
+            <div id="cardPreview" class="card-screenshot" role="button" tabindex="0" aria-label="Tarjeta de desintoxicación" style="display:none" title="Tocá para ver sorpresa">
               <div class="card-inner">
                 <div id="cardTitle" class="card-title">Día X de Desintoxicación</div>
                 <div id="cardDate" class="card-date">DD/MM/AAAA</div>
@@ -73,7 +73,7 @@
           <ul>
             <li>Datos guardados localmente en el navegador (localStorage).</li>
             <li>Clave storage: <code>dh_history_v3</code>.</li>
-            <li>Si querés, agrego exportar/importar con Google Drive o sincronía (opcional).</li>
+            <li>Si querés, agrego sincronía con Drive/FireBase (opcional).</li>
           </ul>
         </div>
       </aside>
@@ -83,6 +83,16 @@
       <small>Diseño: Poppins — Colores azul/verde claro — LocalStorage</small>
     </footer>
   </main>
+
+  <!-- Modal / Popup -->
+  <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-label="Sorpresa">
+      <button id="modalClose" class="modal-close" aria-label="Cerrar">✕</button>
+      <!-- Cambia src si el archivo tiene otro nombre -->
+      <img id="modalImage" src="meme.jpg" alt="Sorpresa: perrito" />
+      <div class="modal-caption">Ser adulto es solo pagar cosas e inflamarse</div>
+    </div>
+  </div>
 
   <script src="app.js" type="module"></script>
 </body>
